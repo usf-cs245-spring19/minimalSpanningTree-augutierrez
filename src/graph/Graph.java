@@ -9,7 +9,11 @@ package graph;
  * You are required to implement a PriorityQueue from scratch, instead of using Java's built in.
  */
 
+import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
+
 import java.awt.*;
+import java.io.File;
+import java.util.Scanner;
 
 public class Graph {
     private CityNode[] nodes; // nodes of the graph
@@ -24,12 +28,54 @@ public class Graph {
      *
      * @param filename name of the file that has nodes and edges
      */
-    public Graph(String filename) {
+    public Graph(String filename) throws java.io.FileNotFoundException{
        // FILL IN CODE: load the graph from the given file
+        File file = new File ("input/"+filename); // this has no error
+        Scanner input = new Scanner(file);
+        String line = input.nextLine(); // should be NODES
+        line = input.nextLine(); // should tell us how many iterations to go through
+        int iterations = Integer.parseInt(line);
+        nodes = new CityNode[iterations];//initiate nodes
+        for(int i = 0; i < iterations; i++){
+            line = input.nextLine();
+            String data[] = line.split(" ");
+            nodes[i] = new CityNode(data[0], Double.parseDouble(data[1]), Double.parseDouble(data[2]));
+        }
+        input.nextLine();
+
+        System.out.println(line);
 
 
 
-    }
+            int id1 = -1;
+            int id2 = -1;
+            adjacencyList = new Edge[100]; // CHECK HOW TO DO THIS RIGHT, segfault if don't initialize
+            int numEdges = 0; // keeps track of number of edges
+            for(int i = 0; i < iterations; i++) {
+                if(input.hasNextLine()) {
+                    line = input.nextLine();
+                    String data[] = line.split(" ");
+//                    System.out.println("here");
+                    if (nodes[i].getCity().equals(data[0]))
+                        id1 = i;
+                    if (nodes[i].getCity().equals(data[1]))
+                        id2 = i;
+//                    System.out.println("here");
+                    adjacencyList[i] = new Edge(id1, id2, Integer.parseInt(data[2]));
+                    numEdges++;
+                }
+                else
+                    i = iterations; //break
+            }
+        System.out.println("here");
+
+
+
+        }
+
+
+
+
 
 
 
@@ -80,8 +126,9 @@ public class Graph {
         }
         Point[] nodes = new Point[this.nodes.length];
         // FILL IN CODE
-
-
+        for(int i = 0; i < this.nodes.length; i++){ //will create a list of the locations of nodes
+            nodes[i] = this.nodes[i].getLocation();
+        }
         return nodes;
     }
 
