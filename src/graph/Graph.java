@@ -108,9 +108,10 @@ public class Graph {
     public Point[][] getEdges() {
         Point[][] edges2D = new Point[numEdges][2];
         // FILL IN CODE
-
-
-
+        for(int i = 0; i < numEdges; i++){
+            edges2D[i][0] = nodes[adjacencyList[i].getId1()].getLocation();
+            edges2D[i][1] = nodes[adjacencyList[i].getId2()].getLocation();
+        }
         return edges2D;
     }
 
@@ -126,7 +127,7 @@ public class Graph {
         }
         Point[] nodes = new Point[this.nodes.length];
         // FILL IN CODE
-        for(int i = 0; i < this.nodes.length; i++){ //will create a list of the locations of nodes
+        for(int i = 0; i < this.nodes.length; i++){ //will create a list of the locations of the nodes
             nodes[i] = this.nodes[i].getLocation();
         }
         return nodes;
@@ -144,10 +145,10 @@ public class Graph {
         }
         String[] labels = new String[nodes.length];
         // FILL IN CODE
-
-
+        for(int i = 0; i < this.nodes.length; i++) { //will create a list of the cities of the nodes
+            labels[i] = nodes[i].getCity();
+        }
         return labels;
-
     }
 
     /**
