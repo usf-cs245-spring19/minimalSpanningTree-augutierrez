@@ -26,7 +26,7 @@ public class PrimAlgorithm extends MSTAlgorithm {
         // FILL IN CODE
         // Note: must use a PriorityQueue and be efficient
         Table table[] = new Table[this.numNodes()];
-      //  Initialize the table as shown above Repeat numVertices times:
+      //  Initialize the table as shown above Repeat numVertices times:/
         for(int i = 0; i < this.numNodes(); ++){
             if(i )
             table[i]
