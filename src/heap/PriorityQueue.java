@@ -11,7 +11,7 @@ public class PriorityQueue {
 
     public PriorityQueue(int size){
         this.size = 1;
-        position = new int[size+1000]; // just to make sure we don't run out of memory
+        position = new int[size+1000]; // just to make sure we don't run out of memory/
         heap = new PriorityQueueObject[size+1];
         heap[0] = new PriorityQueueObject(-1, Integer.MIN_VALUE);
     }
