@@ -25,9 +25,33 @@ public class PrimAlgorithm extends MSTAlgorithm {
     public void computeMST() {
         // FILL IN CODE
         // Note: must use a PriorityQueue and be efficient
-
+        Table table[] = new Table[this.numNodes()];
+      //  Initialize the table as shown above Repeat numVertices times:
+        for(int i = 0; i < this.numNodes(); ++){
+            if(i )
+            table[i]
+        }
+        v = findMinimumUknownVertex() mark v as known
+        for each neighbor u of v:
+        if (u is unknown)
+        if table[u].cost > cost of edge from v to u {
+            table[u].cost = cost of edge from v to u table[u].path = v
+        }
 
 
     }
 
+    public class Table {
+        public int cost;
+        public int path;
+
+        public Table(int cost, int path){
+            this.cost = cost;
+            this.path = path;
+        }
+    }
 }
+
+
+
+
