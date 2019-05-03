@@ -10,114 +10,198 @@ public class PriorityQueue {
 
 
     public PriorityQueue(int size){
-        this.size = 1;
-        position = new int[size]; // just to make sure we don't run out of memory/
+        this.size = 0;
+        position = new int[size];
         heap = new PriorityQueueObject[size+1];
         heap[0] = new PriorityQueueObject(-1, Integer.MIN_VALUE);
     }
 
-    public void insert(int nodeId, int priority){ // if we insert more elements, position wont be large enough
 
+    public void insert(int nodeId, int priority){ // if we insert more elements, position wont be large enough
+        size++;
         heap[size] = new PriorityQueueObject(nodeId, priority);
         position[nodeId] = size;
         bubbleup(size);
-        //position[nodeId] = x;
-        size++;
+
     }
-    // bubble up and bubble down should change positions array too
+
+
     int bubbleup(int x){ // to be used after insertion
-     //   System.out.println(x);
-        int priority = heap[x].cost;
-        int Id = heap[x].nodeId;
-  //      System.out.println("THIS IS THE ID IN BUBBLE : " + Id);
         int index = x;
-        while(heap[index/2].cost > priority) {
-//            int tempCost = heap[index].cost;
-//            int tempNode = heap[index].nodeId;
-            // fix position of the one you swap too
-            heap[index].cost = heap[index / 2].cost;
-            heap[index].nodeId = heap[index / 2].nodeId;// node id and cost
-            heap[index / 2].cost = priority;
-            heap[index / 2].nodeId = Id;
-   //         print();
-            int pos1 = position[heap[index / 2].nodeId];
- //           System.out.println(heap[1].nodeId);
-            int pos2 = position[heap[index].nodeId];
-            position[heap[index / 2].nodeId] = pos2;
-            position[heap[index].nodeId] = pos1;
-            index = index/2;
+        Boolean needBreak = false;
+
+        while(!needBreak) { // check parent, swap with parent if parent is larger, fix positions
+            int IdChild = heap[index].nodeId;
+            int priorityChild = heap[index].cost;
+            int IdParent = heap[index/2].nodeId; // currently higher priority
+            int priorityParent = heap[index/2].cost;
+
+            if(priorityChild < priorityParent) {
+                int pos2 = position[IdChild];
+                int pos1 = position[IdParent];
+                
+                heap[index].cost = priorityParent; // switched cost
+                heap[index].nodeId = IdParent;// switched node Id's
+
+                position[IdParent] = pos2;
+
+
+                heap[index / 2].cost = priorityChild;
+                heap[index / 2].nodeId = IdChild;
+
+                position[IdChild] = pos1; // switched position
+
+                index = index / 2;
+            }
+            else{
+                needBreak = true;
+            }
         }
         return index;
     }
 
     int bubbledown(int x){ // to be used after deletion
-  //      System.out.println(x);
-        int priority = heap[x].cost;
-        int Id = heap[x].nodeId;
+
         int index = x;
-        //position[x] = 1;
-        while(index * 2 < size){
-            //&& (heap[index*2].cost < priority || heap[index*2+1].cost < priorty
-            int cost1;
-            int cost2 = Integer.MAX_VALUE;
-            cost1 = heap[index*2].cost;
-            Boolean needBreak = true;
-            if(index*2 + 1 < size){ // if there is a second child
-                cost2 = heap[index*2+1].cost;
-                if(cost2 < cost1 && cost2 < priority){ // swap with second child
-//                    int tempCost = heap[index].cost;
-//                    int tempNode = heap[index].nodeId;
-                    heap[index].cost = heap[index * 2 + 1].cost;
-                    heap[index].nodeId = heap[index * 2 + 1].nodeId;// node id and cost
-                    heap[index * 2 + 1].cost = priority;
-                    heap[index * 2 + 1].nodeId = Id;
+       Boolean needBreak = false;
+        while(index * 2 < size && !needBreak){
+            int priorityParent = heap[index].cost; // parent (current)
+            int IdParent = heap[index].nodeId;
 
-                    int pos1 = position[heap[index * 2].nodeId];
-                    int pos2 = position[heap[index].nodeId];
-                    position[heap[index * 2].nodeId] = pos2;
-                    position[heap[index].nodeId] = pos1;
+            int priorityChild1 = heap[index*2].cost; // first child
+            int IdChild1 = heap[index*2].nodeId;
 
-                    index = index * 2 + 1;
-                    needBreak = false;
+            if(index * 2 + 1 < size){ // if there is a second child
+                int priorityChild2 = heap[index*2+1].cost;
+                int IdChild2 = heap[index*2+1].nodeId;
+
+                if (priorityChild2 <= priorityChild1 && priorityChild2 < priorityParent){
+                    //do swapping
+                    int pos2 = position[IdParent];
+                    int pos1 = position[IdChild2];
+
+                    heap[index].cost = priorityChild2; // switched cost
+                    heap[index].nodeId = IdChild2;// switched node Id's
+
+                    position[IdChild2] = pos2; // switched position
+
+                    heap[index * 2 + 1].cost = priorityParent; // switched cost
+                    heap[index * 2 + 1].nodeId = IdParent;// switched node Id's
+
+                    position[IdParent] = pos1; // switched position
+
+                    index = index*2 + 1;
+                }
+                else if(priorityChild1 < priorityChild2 && priorityChild1 < priorityParent){
+                    //do swapping
+                    int pos2 = position[IdParent];
+                    int pos1 = position[IdChild1];
+
+                    heap[index].cost = priorityChild1; // switched cost
+                    heap[index].nodeId = IdChild1;// switched node Id's
+
+                    position[IdChild1] = pos2; // switched position
+
+                    heap[index * 2].cost = priorityParent; // switched cost
+                    heap[index * 2].nodeId = IdParent;// switched node Id's
+
+                    position[IdParent] = pos1; // switched position
+
+                    index = index*2;
+                }
+                else{
+                    needBreak = true;
                 }
             }
-            if((cost1 == cost2 || cost1 < cost2) && cost1 < priority){ //swap with first child
-                heap[index].cost = heap[index * 2].cost;
-                heap[index].nodeId = heap[index * 2].nodeId;// node id and cost
-                heap[index * 2].cost = priority;
-                heap[index * 2].nodeId = Id;
+            else{
+                if (priorityChild1 < priorityParent){
+                    //do swapping
+                    int pos2 = position[IdParent];
+                    int pos1 = position[IdChild1];
 
-                int pos1 = position[heap[index * 2].nodeId];
-                int pos2 = position[heap[index].nodeId];
-                position[heap[index * 2].nodeId] = pos2;
-                position[heap[index].nodeId] = pos1;
+                    heap[index].cost = priorityChild1; // switched cost
+                    heap[index].nodeId = IdChild1;// switched node Id's
 
-                index = index * 2;
-                needBreak = false;
+                    position[IdChild1] = pos2; // switched position
+
+                    heap[index * 2].cost = priorityParent; // switched cost
+                    heap[index * 2].nodeId = IdParent;// switched node Id's
+
+                    position[IdParent] = pos1; // switched position
+
+                    index = index*2;
+                }
+                else{
+                    needBreak = true;
+                }
             }
-            if(needBreak){
-                break;
+
+
+//            int cost1;
+//            int cost2 = Integer.MAX_VALUE;
+//            cost1 = heap[index*2].cost;
+
+
+//            Boolean needBreak = true;
+//            if(index*2 + 1 < size){ // if there is a second child
+//                cost2 = heap[index*2+1].cost;
+//                if(cost2 < cost1 && cost2 < priority){ // swap with second child
+////                    int tempCost = heap[index].cost;
+////                    int tempNode = heap[index].nodeId;
+//                    heap[index].cost = heap[index * 2 + 1].cost;
+//                    heap[index].nodeId = heap[index * 2 + 1].nodeId;// node id and cost
+//                    heap[index * 2 + 1].cost = priority;
+//                    heap[index * 2 + 1].nodeId = Id;
+//
+//                    int pos1 = position[heap[index * 2].nodeId];
+//                    int pos2 = position[heap[index].nodeId];
+//                    position[heap[index * 2].nodeId] = pos2;
+//                    position[heap[index].nodeId] = pos1;
+//
+//                    index = index * 2 + 1;
+//                    needBreak = false;
+//                }
             }
-        }
+//            if((cost1 == cost2 || cost1 < cost2) && cost1 < priority){ //swap with first child
+//                heap[index].cost = heap[index * 2].cost;
+//                heap[index].nodeId = heap[index * 2].nodeId;// node id and cost
+//                heap[index * 2].cost = priority;
+//                heap[index * 2].nodeId = Id;
+//
+//                int pos1 = position[heap[index * 2].nodeId];
+//                int pos2 = position[heap[index].nodeId];
+//                position[heap[index * 2].nodeId] = pos2;
+//                position[heap[index].nodeId] = pos1;
+//
+//                index = index * 2;
+//                needBreak = false;
+//            }
+//            if(needBreak){
+//                break;
+//            }
+//        }
         return index;
     }
 
     //- Inserts node id with the given priority into the priority queue. Priority is the cost of the edge.
     public int removeMin(){
-        if(size == 1){ //heap is empty
+        if(size == 0){ //heap is empty
             return -1;
         }
         int Id = heap[1].nodeId;
+        position[Id] = -1;
 //        int priority = heap[1].cost;
+        position[heap[size].nodeId] = 1;
+        heap[1].cost = heap[size].cost;
+        heap[1].nodeId = heap[size].nodeId;
 
-        heap[1].cost = heap[size - 1].cost;
-        heap[1].nodeId = heap[size - 1].nodeId;
-        int newPos = bubbledown(1);
-        position[heap[size - 1].nodeId] = 1;
-        //position[size-2] = newPos; // -2 because position doesn't count the min int at 0  MAYBE
-        position[Id] = -1; // position in the heap, -1 because its gone
-  //      System.out.println(size);
         size --;
+        bubbledown(1);
+
+        //position[size-2] = newPos; // -2 because position doesn't count the min int at 0  MAYBE
+         // position in the heap, -1 because its gone
+  //      System.out.println(size);
+
         return Id;
     }
     // - Removes the vertex with the smallest priority from the queue, and returns it.
