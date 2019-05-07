@@ -13,6 +13,7 @@ import com.sun.tools.doclets.formats.html.SourceToHTMLConverter;
 
 import java.awt.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Graph {
@@ -28,56 +29,49 @@ public class Graph {
      *
      * @param filename name of the file that has nodes and edges
      */
-    public Graph(String filename) throws java.io.FileNotFoundException{
-       // FILL IN CODE: load the graph from the given file
-        File file = new File ("input/"+filename); // this has no error
-        Scanner input = new Scanner(file);
-        String line = input.nextLine(); // should be NODES
-        line = input.nextLine(); // should tell us how many iterations to go through
-        int iterations = Integer.parseInt(line);
-        nodes = new CityNode[iterations];//initiate nodes
-        for(int i = 0; i < iterations; i++){
-            line = input.nextLine();
-            String data[] = line.split(" ");
-            nodes[i] = new CityNode(data[0], Double.parseDouble(data[1]), Double.parseDouble(data[2]));
-        }
-        input.nextLine();
-
-        System.out.println(line);
-
-
-
-            int id1 = -1;
-            int id2 = -1;
-            adjacencyList = new Edge[100]; // CHECK HOW TO DO THIS RIGHT, segfault if don't initialize
-            int numEdges = 0; // keeps track of number of edges
-            for(int i = 0; i < iterations; i++) {
-                if(input.hasNextLine()) {
-                    line = input.nextLine();
-                    String data[] = line.split(" ");
-//                    System.out.println("here");
-                    if (nodes[i].getCity().equals(data[0]))
-                        id1 = i;
-                    if (nodes[i].getCity().equals(data[1]))
-                        id2 = i;
-//                    System.out.println("here");
-                    adjacencyList[i] = new Edge(id1, id2, Integer.parseInt(data[2]));
-                    numEdges++;
-                }
-                else
-                    i = iterations; //break
+    public Graph(String filename){
+        try {
+            // FILL IN CODE: load the graph from the given file
+            File file = new File("input/" + filename); // this has no error
+            Scanner input = new Scanner(file);
+            String line = input.nextLine(); // should be NODES
+            line = input.nextLine(); // should tell us how many iterations to go through
+            int iterations = Integer.parseInt(line);
+            nodes = new CityNode[iterations];//initiate nodes
+            for (int i = 0; i < iterations; i++) {
+                line = input.nextLine();
+                String data[] = line.split(" ");
+                nodes[i] = new CityNode(data[0], Double.parseDouble(data[1]), Double.parseDouble(data[2]));
             }
-        System.out.println("here");
+            // HASHMAP
+            HashMap<String, Integer> map = new HashMap();
+            for (int i = 0; i < numNodes(); i++) {
+                map.put(nodes[i].getCity(), i);
+            }
 
+            input.nextLine();
 
+            adjacencyList = new Edge[numNodes()]; // CHECK HOW TO DO THIS RIGHT, segfault if don't initialize
+            numEdges = 0; // keeps track of number of edges
 
+            while (input.hasNextLine()) { // read til end of file, make an array of linked lists
+                line = input.nextLine();
+                String data[] = line.split(" ");
+                int Id1 = map.get(data[0]);
+                int Id2 = map.get(data[1]);
+                Edge temp = new Edge(Id1, Id2, Integer.parseInt(data[2]));
+                temp.setNext(adjacencyList[Id1]);
+                adjacencyList[Id1] = temp; // the new edge is now the head
+                Edge temp1 = new Edge(Id2, Id1, Integer.parseInt(data[2])); // we need to add the edge going both way
+                temp1.setNext(adjacencyList[Id2]);
+                adjacencyList[Id2] = temp1; // the new edge is now the head
+                numEdges = numEdges + 2;
+            }
         }
-
-
-
-
-
-
+        catch(Exception e){
+            System.out.println(e);
+        }
+    }
 
     /**
      * Return the number of nodes in the graph
@@ -106,12 +100,22 @@ public class Graph {
      * This info can be obtained from the adjacency list
      */
     public Point[][] getEdges() {
+
         Point[][] edges2D = new Point[numEdges][2];
         //FILL IN CODE
-        for(int i = 0; i < numEdges; i++){
-            edges2D[i][0] = nodes[adjacencyList[i].getId1()].getLocation();
-            edges2D[i][1] = nodes[adjacencyList[i].getId2()].getLocation();
+        int counter = 0;
+
+        for(int i = 0; i < numNodes(); i++){
+
+            Edge pointer = adjacencyList[i];
+            while(pointer != null){
+                edges2D[counter][0] = nodes[pointer.getId1()].getLocation();
+                edges2D[counter][1] = nodes[pointer.getId2()].getLocation();
+                counter++;
+                pointer = pointer.next();
+            }
         }
+
         return edges2D;
     }
 
@@ -140,7 +144,6 @@ public class Graph {
      */
     public String[] getCities() {
         if (nodes == null) {
-            //System.out.println("Graph is empty, load the graph from the file first");
             return null;
         }
         String[] labels = new String[nodes.length];
