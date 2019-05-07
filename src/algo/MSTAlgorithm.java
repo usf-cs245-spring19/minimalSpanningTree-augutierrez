@@ -66,6 +66,7 @@ public abstract class MSTAlgorithm {
     public Point[][] getMSTEdges() {
         Point[][] edges = new Point[edgesMST.size()][2];
         Point[] locations = graph.getNodes();
+
         int i = 0;
 
         for (Edge edge : edgesMST) {
