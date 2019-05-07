@@ -24,31 +24,78 @@ public class PrimAlgorithm extends MSTAlgorithm {
      * */
     @Override
     public void computeMST() {
-        // FILL IN CODE
-        // Note: must use a PriorityQueue and be efficient
+        //FILL IN
         Table table[] = new Table[this.numNodes()];
-      //  Initialize the table as shown above Repeat numVertices times:/
-        //When you take min , at first it will return the source vertex, then you look at the nodes accessible through
-        //that node and update the neighbor's cost.
+
         for(int i = 0; i < this.numNodes(); i++){
+            Table element;
             if(i == sourceVertex) {
-                table[i].cost = 0;
+                element = new Table(0, -1);
+                table[i] = element; // insert to priority queue
             }
             else{
-                table[i].cost = Integer.MAX_VALUE;
+                element = new Table(Integer.MAX_VALUE, -1);
+                table[i] = element;
             }
-            table[i].path = -1;
-
        }
-        int node = PriorityQueue
-//        //v = findMinimumUknownVertex() mark v as known
-//        for each neighbor u of v:
-//        if (u is unknown)
-//        if table[u].cost > cost of edge from v to u {
-//            table[u].cost = cost of edge from v to u table[u].path = v
-//        }
+
+       /*
+       TABLE INITIALIZED
+        */
+
+       PriorityQueue queue = new PriorityQueue(numNodes());
+       /*
+       Priority Queue Start
+        */
+
+        Boolean found[] = new Boolean[numNodes()];
+        /*
+        So we don't run into -1 in the heap
+         */
+        for(int a = 0; a < numNodes(); a++)
+            found[a] = false;
+
+        for(int i = 0; i < table.length; i++){
+            queue.insert(i,table[i].cost);
+        } // filled up the queue with initial values
+        //correct
+
+        /*
+        Starting Prim's algorithm
+         */
+        for(int i = 0; i < numNodes(); i++) {
+            int min = queue.removeMin();
+            found[min] = true;
+            Edge pointer = getFirstEdge(min);
+            while(pointer != null){
+                int newCost = pointer.getCost();
+                int Id = pointer.getId2();
+                if(!found[Id]) { // if we know the shortest way to get there, we no longer need to worry about it
+                    if(newCost < table[Id].cost) { // if the cost is cheaper than what we currently have, update the table and heap
+                        queue.reduceKey(Id, newCost);
+                        table[Id].cost = newCost;
+                        table[Id].path = pointer.getId1();
+                        // if not found
+                    }
+                }
+                // need to update table as well
+                pointer = pointer.next();
+            }
+        }
 
 
+        /*
+        Transfer findings of Table to MSTedges
+         */
+        for(int c = 0; c < numNodes(); c++){
+            if (table[c].path != -1) {
+                int id1 = table[c].path;
+                int id2 = c;
+                int cost = table[c].cost;
+                Edge mstEdge = new Edge(id1,id2,cost);
+                addMSTEdge(mstEdge);
+            }
+        }
     }
 
     public class Table {
