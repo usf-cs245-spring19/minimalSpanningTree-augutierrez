@@ -9,6 +9,11 @@ public class DisjointSets {
 
     public void createSets(int n) {
         // FILL IN CODE
+        parent = new int[n];
+        for(int i = 0; i < n; i++){
+            parent[i] = -1;
+        }
+        // every node starts off as its own set
     }
 
     /**
@@ -19,8 +24,10 @@ public class DisjointSets {
      */
     public int find(int x) {
         // FILL IN CODE
+        while (parent[x] >= 0)
+            x = parent[x];
 
-        return -1; // change
+        return x;
     }
 
     /**
@@ -30,7 +37,21 @@ public class DisjointSets {
      */
     public void union(int x, int y) {
         // FILL IN CODE
+        int rootx = find(x);
+        int rooty = find(y);
 
+        if(rootx == rooty)
+            return;
+
+        if(parent[rootx] < parent[rooty]){
+            parent[rooty] = rootx; // assigning biggest tree to smallest one
+        }
+        else{
+            if (parent[rootx] == parent[rooty])
+                parent[rooty]--;
+
+            parent[rootx] = rooty;
+        }
     }
 
 }
